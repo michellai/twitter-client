@@ -5,7 +5,7 @@ TwitterApi::Application.routes.draw do
 
   get "static_pages/home"
 
-  get "api/retrieveTweets/:id" => "api#retrieveTweets"
+  get "api/retrieveTweets/:id" => "api#retrieveTweets" #convention for naming is for api to map to controller name
 
   post "api/posttweet" => "api#postTweet"
 

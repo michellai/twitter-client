@@ -1,3 +1,127 @@
 // Place all the styles related to the StaticPages controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+body {
+	font-family: helvetica;
+	font-color: white;
+	background-color: #8700E8;
+	background-image:url('stanford.jpg');
+	backround-repeat:no-repeat;
+	background-size:cover;
+
+}
+.dashboard-container {
+	float: left;
+	width: 35%;
+}
+.tweet-container {
+	float: right;
+	
+	margin-right: 40px;
+	margin-top: 200px;
+	width: 60%;
+	height: 80%;
+	background-color: #990000;
+	-moz-border-radius: 12px;
+	border-radius: 12px;
+	opacity:0.9;
+
+}
+.sm-container {
+	background-color: #990000;
+	-moz-border-radius: 12px;
+	border-radius: 12px;
+	min-height: 200px;
+	width: 90%;
+	opacity:0.9;
+	margin: 30px auto;
+}
+.sm-label {
+	text-align: center;
+	font-size: 24px;
+	color: #FFFFFF;
+	margin-top: 8px;
+	border-bottom: 1px solid white;
+}
+.tweet-sort-bar {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	margin-left: 10px;
+	color: #FFFFFF;
+}
+.pages {
+	border: 0px;
+	padding-right: 10px;
+	display: inline-block;
+	float: right;
+}
+
+.sort-option {
+	border-right: 1px solid white;
+	padding: 0px 6px;
+}
+
+a.sort-option:link {
+	text-decoration:none;
+	color:#FFFFFF;      /* unvisited link */
+}
+a.sort-option:visited {color:#FFFFFF;}  /* visited link */
+a.sort-option:hover {color:#380000 ;}  /* mouse over link */
+a.sort-option:active {color:#FFFFFF;} 
+
+.compose-new {
+	margin-top: 50px;
+}
+.self-profile-img {
+	width: 33%;
+	margin-left: 33%;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.self-profile-name {
+	border-top: 1px solid white;
+	border-bottom: 1px solid white;
+	color: #FFFFFF;
+	font-size:24px;
+	text-align: center;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.tweet {
+	padding: 12px 8px 16px 8px;
+	margin:-8px 10px;
+	background-color: #FFFFFF;
+	min-height:60px;
+	
+}
+
+.profile-img {
+	border: 2px solid white;
+	float: left;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	margin: auto 10px;
+	height:56px;
+	width:56px;
+
+}
+
+.profile {
+	margin-left: 40px;
+	margin-bottom: 6px;
+}
+.handle {
+	font-color: gray;
+}
+.action {
+	float: right;
+}
+a:link {
+	text-decoration:none;
+	color:#990000;      /* unvisited link */
+}
+a:visited {color:#C01818;}  /* visited link */
+a:hover {color:#EA1D24;}  /* mouse over link */
+a:active {color:#380000 ;}  /* selected link */

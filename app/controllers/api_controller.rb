@@ -2,7 +2,7 @@ class ApiController < ApplicationController
 
 require 'twitter'
 
-  def retrieveTweets
+  def retrieveTweets #called an action /function/method
     file = File.join(Rails.root, 'app', 'assets', 'javascripts', 'stanford1.json')
     if Integer(params[:page]) <= 6
       file = File.join(Rails.root, 'app', 'assets', 'javascripts', 'stanford' + params[:page] + '.json')
