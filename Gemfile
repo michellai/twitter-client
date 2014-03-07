@@ -43,3 +43,5 @@ gem 'ejs'
 
 # To use debugger
 # gem 'debugger'
+
+gem 'font-awesome-sass'

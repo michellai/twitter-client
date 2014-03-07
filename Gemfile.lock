@@ -55,6 +55,8 @@ GEM
     execjs (2.0.2)
     faraday (0.8.9)
       multipart-post (~> 1.2.0)
+    font-awesome-sass (4.0.3.1)
+      sass (~> 3.2)
     hike (1.2.3)
     http (0.5.0)
       http_parser.rb
@@ -149,6 +151,7 @@ PLATFORMS
 DEPENDENCIES
   coffee-rails (~> 3.2.1)
   ejs
+  font-awesome-sass
   jquery-rails
   pry
   pry-debugger

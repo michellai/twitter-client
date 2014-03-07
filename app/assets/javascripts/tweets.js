@@ -2,7 +2,26 @@
 //how to access assets directory (images, font-awesome)
 //how to register placeholder for failed GETS
 
-$(document).ready(requestData(1));
+$(document).ready(
+  function() {
+    requestData(1);
+    $("img").on('error', function() {
+      debugger
+      $(this).prop('src', 'http://placehold.it/350x100&text=Image%20Not%20Found');
+    });
+  }
+);
+$(window).scroll(function() {
+  //debugger
+  if (!$('body').hasClass('processing')) {
+    if($(window).scrollTop() + $(window).height() >= .9*$(document).height()) {
+      $('body').addClass('processing');
+      requestData(1);
+      console.log('ajax called');
+    }
+  }
+});
+
 
 function requestData(pageIndex) { 
   $.ajax({
@@ -15,6 +34,7 @@ function requestData(pageIndex) {
       displayAll(response['statuses']);
       displayMostRT(response['statuses']);
       displayMostFollowers(response['statuses']);
+      $('body').removeClass('processing');
     }
     //error
   })
@@ -39,8 +59,8 @@ function displayTweet(status) {
     tweetLoc = status['user']['location'];
     tweetLocSpan = '<span class="tweet-loc">'+tweetLoc+'</span>';
     
-    favesSpan = '<span class="num-faves">'+status['favorite_count']+'</span>';
-    rts = '<span class="num-rts">'+status['retweet_count']+'</span>';
+    favesSpan = '<span class="num-faves">'+status['favorite_count']+' <i class="fa fa-star fa-lg"></i></span>';
+    rts = '<span class="num-rts">'+status['retweet_count']+' <i class="fa fa-retweet"></i></span>';
     favorited = status['favorited'];
     var faveSpan = '';
     rt = status['retweeted'];
@@ -51,7 +71,7 @@ function displayTweet(status) {
     if (rt) {
       rtSpan = '<span class="retweeted"></span>';
     }
-    action = '<span class="action">'+faveSpan+' '+favesSpan+' <i class="fa fa-star"></i> '+rtSpan+' '+rts+' <i class="fa fa-retweet"></i></span>';
+    action = '<span class="action">'+faveSpan+' '+favesSpan+'  '+rtSpan+' '+rts+'</span>';
     profileDiv = '<div class="profile">'+profileName+' '+profileHandleUrlSpan+' '+tweetDateSpan+' '+tweetLocSpan+action+'</div>';
 
     tweetTxt = status['text'];
@@ -64,7 +84,7 @@ function displayTweet(status) {
                          .replace(twhash, '<a href="http://search.twitter.com/search?q=$1">#$1</a>');
 
     tweetDiv = '<div class="tweet">'+profileImgDiv+profileDiv+newTxt+'</div><br/>'
-    $('.tweet-container').append(tweetDiv);
+    $('.tweet-container').append(JST.tweet({tweet:status}));
 
 }
 
