@@ -1,6 +1,20 @@
 <div class='tweet'>
-	<% if (tweet.retweeted == false) { %>
-		<b>This was RT</b>
-	<%}%>
-	<%=tweet.text%>
-</div>
+	<div class='profile'>
+		<span><img class="profile-img" src="<%=tweet.user.profile_image_url%>"/></span>
+		<span class="handle"><a href="http://twitter.com/@<%=tweet.user.screen_name%>"%>@<%=tweet.user.screen_name%></a></span>
+		<span class="tweet-date"><%=tweet.created_at.split(' ')[1]%> <%=tweet.created_at.split(' ')[2] %></span>
+		<span class="tweet-loc"><%=tweet.user.location%></span>
+		<span class="num-faves"><%=tweet.favorite_count%><i class="fa fa-star fa-lg"></i></span>
+		<span class="num-rts"><%=tweet.retweet_count%><i class="fa fa-retweet"></i></span>
+		<span class="action">
+		<% if (tweet.favorited == true) { %>
+			<span class="favestar"></span>'
+		<%}%>
+		<% if (tweet.retweeted == true) { %>
+			<span class="retweeted"></span>
+		<%}%>
+		</span>
+	</div>
+	<%= tweet.text%>
+
+</div>   
