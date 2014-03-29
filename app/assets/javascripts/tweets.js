@@ -9,7 +9,12 @@ $(document).ready(
     displayMostRT();
     displayMostFollowers();
   }
+  
 );
+$('a.sort').click(function(e)
+{
+    e.preventDefault();
+});
 $(window).scroll(function() {
   //debugger
   if (!$('body').hasClass('processing')) {
@@ -21,6 +26,11 @@ $(window).scroll(function() {
   }
 });
 
+window.options = {
+        valueNames: [ 'tweet-date', 'num-rts', 'num-faves' ]
+    };
+
+window.userList = new List('tweets', window.options);
 
 function requestData() { 
   $.ajax({
@@ -59,7 +69,7 @@ function displayTweet(status) {
                          .replace(twre, '<a href="http://twitter.com/@$1">@$1</a>')
                          .replace(twhash, '<a href="http://search.twitter.com/search?q=$1">#$1</a>');
     status['text'] = newTxt;
-    $('.tweet-container').append(JST.tweet({tweet:status}));
+    $('.list').append(JST.tweet({tweet:status}));
 
 }
 

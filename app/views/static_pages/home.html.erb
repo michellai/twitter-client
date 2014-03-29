@@ -9,13 +9,13 @@
 	<table class="most-rt sm-container"></table>
 	<table class="most-follow sm-container"></table>
 </div>
-<div class="tweet-container">
+<div id="tweets" class="tweet-container">
 	<div class="tweet-sort-bar">Sort By:
-		<a class="sort-option" href="">Time</a>
-		<a class="sort-option" href="">Retweets</a>
-		<a class="sort-option" href="">Favorites</a>
-		<a class="sort-option" href="">Followers</a>
-		<a class="sort-option" href="">Tweets</a>
+		<button class="sort" data-sort="tweet-date">Time</button>
+		<button class="sort" data-sort="num-rts">Retweets</button>
+		<a class="sort" data-sort="num-faves">Favorites</a>
+		<a class="sort" href="">Followers</a>
+		<a class="sort" href="">Tweets</a>
 
 		<span class="pages">Page:
 			<a class="sort-option" href=".">1</a>
@@ -26,4 +26,6 @@
 			<a class="sort-option" href=".">6</a>
 		</span>
 	</div>
+	<ul class="list">
+	</ul>
 </div>
