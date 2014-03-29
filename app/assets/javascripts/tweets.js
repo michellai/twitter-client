@@ -8,13 +8,10 @@ $(document).ready(
     requestData(window.pageNum);
     displayMostRT();
     displayMostFollowers();
+
   }
-  
 );
-$('a.sort').click(function(e)
-{
-    e.preventDefault();
-});
+
 $(window).scroll(function() {
   //debugger
   if (!$('body').hasClass('processing')) {
@@ -26,11 +23,7 @@ $(window).scroll(function() {
   }
 });
 
-window.options = {
-        valueNames: [ 'tweet-date', 'num-rts', 'num-faves' ]
-    };
 
-window.userList = new List('tweets', window.options);
 
 function requestData() { 
   $.ajax({
@@ -74,8 +67,14 @@ function displayTweet(status) {
 }
 
 function displayAll(statuses) {
+    var options = {
+        valueNames: [ 'created', 'retweets', 'faves', 'followers', 'tweets' ]
+    };
+
+    var twList = new List('tweets', options);
     for(var i = 0; i< statuses.length; i++) {
         displayTweet(statuses[i]);
+        
     }
 
 }

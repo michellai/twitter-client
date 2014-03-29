@@ -3,10 +3,12 @@
 		<div class='profile'>
 			<span><img class="profile-img" src="<%=tweet.user.profile_image_url%>"/></span>
 			<span class="handle"><a href="http://twitter.com/@<%=tweet.user.screen_name%>"%>@<%=tweet.user.screen_name%></a></span>
-			<span class="tweet-date"><%=tweet.created_at.split(' ')[1]%> <%=tweet.created_at.split(' ')[2] %></span>
+			<span class="created"><%=tweet.created_at.split(' ')[1]%> <%=tweet.created_at.split(' ')[2] %></span>
 			<span class="tweet-loc"><%=tweet.user.location%></span>
-			<span class="num-faves"><%=tweet.favorite_count%><i class="fa fa-star"></i></span>
-			<span class="num-rts"><%=tweet.retweet_count%><i class="fa fa-retweet"></i></span>
+			<span class="faves"><%=tweet.favorite_count%><i class="fa fa-star"></i></span>
+			<span class="retweets"><%=tweet.retweet_count%><i class="fa fa-retweet"></i></span>
+			<span class="followers"><%=tweet.user.followers_count%><i class="fa fa-users"></i></span>
+			<span class="tweets"><%=tweet.user.statuses_count%><i class="fa fa-twitter"></i></span>
 			<span class="action">
 			<% if (tweet.favorited == true) { %>
 				<span class="favestar"></span>'

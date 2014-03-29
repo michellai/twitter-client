@@ -57,9 +57,20 @@ body {
 	float: right;
 }
 
-.sort-option {
+.sort {
 	border-right: 1px solid white;
 	padding: 0px 6px;
+}
+.list {
+  font-family:sans-serif;
+  margin:0;
+  padding:20px 0 0;
+}
+.list > li {
+  display:block;
+  background-color: #eee;
+  padding:10px;
+  box-shadow: inset 0 1px 0 #fff;
 }
 
 a.sort-option:link {
@@ -75,9 +86,9 @@ a.sort-option:active {color:#FFFFFF;}
 }
 .self-profile-img {
 	width: 33%;
-	margin-left: 33%;
-	margin-top: 10px;
-	margin-bottom: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 33%;
 }
 .self-profile-name {
 	border-top: 1px solid white;
@@ -102,28 +113,28 @@ a.sort-option:active {color:#FFFFFF;}
 	float: left;
 	-moz-border-radius: 6px;
 	border-radius: 6px;
-	margin: auto 10px;
 	height:56px;
 	width:56px;
+	margin-right: 10px;
 
 }
-.num-rts, .num-faves {
-	padding-right: 15px;
+.tweet-loc {
+	font-size: 10px;
+}
+.retweets, .faves, .tweets, .followers {
+	padding-right:15px;
 	padding-left: 5px;
 	float: right;
 }
-.fa-star {
-	width: 5px;
-	height: 5px;
-}
-.fa-retweet {
+.fa-star, .fa-retweet, .fa-users, fa-twitter {
+	padding-left: 3px;
 	width: 5px;
 	height: 5px;
 }
 
 .profile {
-	margin-left: 40px;
 	margin-bottom: 6px;
+
 }
 .handle {
 	font-color: gray;
@@ -131,9 +142,56 @@ a.sort-option:active {color:#FFFFFF;}
 .action {
 	float: right;
 }
+a.sort {
+  border:none;
+  display:inline-block;
+  color:#fff;
+  text-decoration: none;
+  height:20px;
+}
+.sort a:hover {
+  text-decoration: none;
+  background-color:#fff;
+}
+.sort a:focus {
+  outline:none;
+}
+.sort:after {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  content:"";
+  position: relative;
+  top:-10px;
+  right:-5px;
+}
+.sort.asc:after {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #fff;
+  content:"";
+  position: relative;
+  top:13px;
+  right:-5px;
+}
+.sort.desc:after {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #fff;
+  content:"";
+  position: relative;
+  top:-10px;
+  right:-5px;
+}
 a:link {
 	text-decoration:none;
-	color:#990000;      /* unvisited link */
+	color:#EA1D24;      /* unvisited link */
 }
 a:visited {color:#C01818;}  /* visited link */
 a:hover {color:#EA1D24;}  /* mouse over link */
