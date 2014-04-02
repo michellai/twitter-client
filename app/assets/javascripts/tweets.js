@@ -6,9 +6,9 @@ $(document).ready(
   function() {
     window.pageNum = 1;
     requestData(window.pageNum);
-    displayMostRT();
-    displayMostFollowers();
-
+    window.mostlocations={};
+    window.mostrts=[];
+    window.mostfollows=[];
   }
 );
 
@@ -18,7 +18,9 @@ $(window).scroll(function() {
     if($(window).scrollTop() + $(window).height() >= .9*$(document).height()) {
       $('body').addClass('processing');
       requestData(1);
-      console.log('ajax called');
+      $('.rtlist').html('');
+      $('.followlist').html('');
+      $('.locationlist').html('');
     }
   }
 });
@@ -44,13 +46,67 @@ function requestData() {
     //error
   })
 }
-function displayMostRT() {
-    rtDiv = '<div class="sm-label">Most Retweeted</div><br/>'
-    $('.most-rt').append(rtDiv);
+function displayMostRT(statuses) {
+    var newlist = window.mostrts.concat(statuses).sort(function (a, b) {
+        if (a.retweet_count > b.retweet_count)
+          return -1;
+        if (a.retweet_count < b.retweet_count)
+          return 1;
+        // a must be equal to b
+        return 0;
+    });
+    window.mostrts = newlist;
+
+    for(var i = 0; i< 4; i++) {
+        $('.rtlist').append(JST.toplistitem({tweet:window.mostrts[i]}));
+    }
+    
 }
-function displayMostFollowers() {
-    followDiv = '<div class="sm-label">Most Followers</div><br/>'
-    $('.most-follow').append(followDiv);
+function displayMostLocations(statuses) {
+
+  for(var i = 0; i < statuses.length; i++) {
+        
+        var locale = statuses[i].user.location;
+        
+        if (locale != "") {
+            if (Object.keys(window.mostlocations).indexOf(locale) != -1) {
+                window.mostlocations[locale]++;
+            } else {
+                window.mostlocations[locale] = 1;
+            }
+        }
+    }
+    
+    console.log(window.mostlocations);
+    var newlist = Object.keys(window.mostlocations).sort(function (a,b) {
+        if(window.mostlocations[a] > window.mostlocations[b])
+            return -1;
+        if (window.mostlocations[a] < window.mostlocations[b])
+            return 1;
+        return 0;
+    });
+    console.log(newlist);
+    for(var i = 0; i< 4; i++) {
+        $('.locationlist').append(JST.toplistloc({location:newlist[i]}));
+    }    
+    
+}
+function displayMostFollowers(statuses) {
+    
+    var newlist = window.mostfollows.concat(statuses).sort(function (a, b) {
+        if (a.user.followers_count > b.user.followers_count)
+          return -1;
+        if (a.user.followers_count < b.user.followers_count)
+          return 1;
+        // a must be equal to b
+        return 0;
+    })
+    window.mostfollows = newlist;
+
+    for(var i = 0; i< 4; i++) {
+        $('.followlist').append(JST.toplistitem({tweet:window.mostfollows[i]}));
+    }
+
 }
 function displayTweet(status) {
     tweetTxt = status['text'];
@@ -71,13 +127,16 @@ function displayAll(statuses) {
         valueNames: [ 'created', 'retweets', 'faves', 'followers', 'tweets' ]
     };
 
-    var twList = new List('tweets', options);
     for(var i = 0; i< statuses.length; i++) {
-        displayTweet(statuses[i]);
-        
+        displayTweet(statuses[i]);  
     }
+    window.twList = new List('tweets', options);
+    displayMostRT(statuses);
+    displayMostFollowers(statuses);
+    displayMostLocations(statuses);
 
 }
+
 function postTweet() {
   $.ajax({
     type: "post",

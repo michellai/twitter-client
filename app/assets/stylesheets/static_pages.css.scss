@@ -12,6 +12,7 @@ body {
 
 }
 .dashboard-container {
+	position: fixed;
 	float: left;
 	width: 35%;
 }
@@ -32,21 +33,40 @@ body {
 	background-color: #990000;
 	-moz-border-radius: 12px;
 	border-radius: 12px;
-	min-height: 200px;
+	min-height: 150px;
 	width: 90%;
 	opacity:0.9;
-	margin: 30px auto;
+	margin: 10px auto;
 }
+.xs-container  {
+	display: inline-block;
+	background-color: #990000;
+	-moz-border-radius: 12px;
+	border-radius: 12px;
+	min-height: 150px;
+	font-size: 12px;
+	width: 180px;
+	opacity:0.9;
+	margin: 10px 20px;
+	padding-bottom: 5px;
+}
+
 .sm-label {
 	text-align: center;
-	font-size: 24px;
+	font-size: 18px;
+	color: #FFFFFF;
+	margin-top: 8px;
+	border-bottom: 1px solid white;
+}
+.xs-label {
+	text-align: center;
+	font-size: 18px;
 	color: #FFFFFF;
 	margin-top: 8px;
 	border-bottom: 1px solid white;
 }
 .tweet-sort-bar {
 	margin-top: 20px;
-	margin-bottom: 20px;
 	margin-left: 10px;
 	color: #FFFFFF;
 }
@@ -66,23 +86,60 @@ body {
   margin:0;
   padding:20px 0 0;
 }
+
 .list > li {
   display:block;
   background-color: #eee;
   padding:10px;
   box-shadow: inset 0 1px 0 #fff;
 }
+.followlist, .rtlist {
+  margin:0;
+}
+.locationlist {
+  list-style-type: none;
+  color: white;
+}
+.toplistloc {
+  font-size: 14px;
+  padding-top: 4px;
+  
+}
+.toplistloc {
+  margin: 3px -25px;
+  text-transform:capitalize;
+}
+.followlist > li, .rtlist > li {
+  display:block;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  margin-left: -18px;
 
-a.sort-option:link {
+}
+.toplist-profile-img {
+	width: 25px;
+	height: 25px;
+	vertical-align: middle;
+
+  
+}
+a.toplistlink:link {
+  color: #fff;
+}
+a.toplistlink:visited {
+  color: PaleVioletRed;
+}
+
+a.sort:link {
 	text-decoration:none;
 	color:#FFFFFF;      /* unvisited link */
 }
-a.sort-option:visited {color:#FFFFFF;}  /* visited link */
-a.sort-option:hover {color:#380000 ;}  /* mouse over link */
-a.sort-option:active {color:#FFFFFF;} 
+a.sort:visited {color:#FFFFFF;}  /* visited link */
+a.sort:hover {color:#380000 ;}  /* mouse over link */
+a.sort:active {color:#FFFFFF;} 
 
 .compose-new {
-	margin-top: 50px;
+	margin-top: 10px;
 }
 .self-profile-img {
 	width: 33%;
@@ -120,6 +177,7 @@ a.sort-option:active {color:#FFFFFF;}
 }
 .tweet-loc {
 	font-size: 10px;
+
 }
 .retweets, .faves, .tweets, .followers {
 	padding-right:15px;
@@ -142,7 +200,7 @@ a.sort-option:active {color:#FFFFFF;}
 .action {
 	float: right;
 }
-a.sort {
+.sort {
   border:none;
   display:inline-block;
   color:#fff;
