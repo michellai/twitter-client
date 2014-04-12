@@ -8,10 +8,11 @@ body {
 	background-color: #8700E8;
 	background-image:url('stanford.jpg');
 	backround-repeat:no-repeat;
-	background-size:cover;
+	background-size:100%;
 
 }
 .dashboard-container {
+	display:none;
 	position: fixed;
 	float: left;
 	width: 35%;
@@ -29,6 +30,7 @@ body {
 	opacity:0.9;
 
 }
+
 .sm-container {
 	background-color: #990000;
 	-moz-border-radius: 12px;
