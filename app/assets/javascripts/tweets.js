@@ -3,229 +3,193 @@
 //how to register placeholder for failed GETS
 
 $(document).ready(
-
-  function() {
-    
-    //window.pageNum = 1;
-    //requestData(window.pageNum);
-    window.mostlocations={};
-    window.mostrts=[];
-    window.mostfollows=[];
+  function() {    
     var tweet = new Tweet();
     var collection = new tweetCollection();
-    collection.fetch({data: {page:1} });
+    collection.comparator = 'created_at';
+    collection.fetch({data: {page:1},
+                      error: function(model, xhr, options) {
+                              console.log("something went wrong!");
+                      }});
     
+    new sortview({'collection':collection} );
     new testview({'model':tweet, 'collection':collection});
+
   }
 );
 
 var Tweet = Backbone.Model.extend({
-  defaults: {
-    "handle": "person",
-    "created": "now",
-    "tweet-loc": "here",
-    "faves": "0",
-    "retweets": "0",
-    "followers": "0",
-    "tweets": "0",
-    "favorited": "",
-    "retweeted": "",
-    "tweet-text": ""
-  }
+    defaults: {
+        "handle": "person",
+        "created_at": "now",
+        "location": "here",
+        "faves": "0",
+        "retweets": "0",
+        "followers": "0",
+        "tweets": "0",
+        "favorited": "",
+        "retweeted": "",
+        "tweet-text": ""
+    }
 });
 
 var tweetCollection = Backbone.Collection.extend({
     url: "/api/retrieveTweets/abcd",
     pageNum: 1,
     model: Tweet, //type
+    sort_order: 'DESC',
+    multiplier: 1,
+    //comparator: 'created_at',
+    initialize: function() {
+        
+        this.comparator = 'created_at';
+        this.sort_order = 'ASC';
+    },
     parse: function(data){
         
+        for (var t = 0; t < data['statuses'].length;t++) {
+            console.log(t);
+            data['statuses'][t]['text'] = this.transformText(data['statuses'][t]['text']);
+        }
+        //debugger
+        
         return data['statuses'];
-    }
+    },
+    transformText: function(statusText) {
+      
+      var twre = /\@([a-z]+)/ig;
+      var twhash = /\#([a-z]+)/ig;
+      var twurl = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+      console.log(statusText);
+      var newTxt = statusText.replace(twurl, '<a href="$1">$1</a>')
+                           .replace(twre, '<a href="http://twitter.com/@$1">@$1</a>')
+                           .replace(twhash, '<a href="http://search.twitter.com/search?q=$1">#$1</a>');
+      return newTxt;
+    },
+    setMultiplier: function() {
+      if (this.sort_order == 'ASC') {
+          this.multiplier = -1;
+      }
+    },
+    sortByRetweeted: function () {
+      this.setMultiplier();
+      debugger
+      this.sort(function (a, b) {
+          debugger
+          if (a.attributes.retweet_count > b.attributes.retweet_count)
+              return this.multiplier*-1;
+          if (a.attributes.retweet_count < b.attributes.retweet_count)
+              return this.multiplier*1;
+          return 0;
+      });
+    },
+    sortByLocations: function () {
+
+      this.sort(function (a, b) {
+          if (a.attributes.user.followers_count > b.attributes.user.followers_count)
+              return -1;
+          if (a.attributes.user.followers_count < b.attributes.user.followers_count)
+              return 1;
+          return 0;
+      });
+    },
+    sortByFollowers: function () {
+      this.setMultiplier();
+
+      this.sort(function (a, b) {
+          if (a.attributes.user.followers_count > b.attributes.user.followers_count)
+              return this.multiplier*-1;
+          if (a.attributes.user.followers_count < b.attributes.user.followers_count)
+              return 1;
+          return 0;
+      });
+    },
+
+
+
 });
-
-var testview = Backbone.View.extend({ 
-  el: '#backbonetest',
+var sortview = Backbone.View.extend({
+  el: '#backbone-sort-view',
+  locations: "tweet-loc",
+  retweet: "retweet_count",
+  followers: "followers_count",
   initialize: function() {
-    this.isLoading = false;
-    this.collection.on('sync', this.render, this);
-    //abstract events, server-related, sorted
-
+      this.multiplier = 'ASC';
   },
   events: {
-    'click': 'clickedHere',
-    'scroll': 'checkScroll'
-    //user actions, click/hover, scroll, etc.
+      'click .loc-button': 'sortByLocations',
+      'click .retweet-button': 'sortByRetweeted',
+      'click .followers-button': 'sortByFollowers'
   },
-  render: function() {
-    
-    //this.collection.models[0].attributes.appetizer
-    //possibly: $('body').removeClass('processing');
-    this.isLoading = false;
-    this.loadResults();
-    //this.$el.html(displayAll(this.collection()));
-  },
-  transformText: function(tweetTxt) {
-    var twre = /\@([a-z]+)/ig;
-    var twhash = /\#([a-z]+)/ig;
-    var twurl = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
-    var newTxt = tweetTxt.replace(twurl, '<a href="$1">$1</a>')
-                         .replace(twre, '<a href="http://twitter.com/@$1">@$1</a>')
-                         .replace(twhash, '<a href="http://search.twitter.com/search?q=$1">#$1</a>');
-    return newTxt;
-  },
-  loadResults: function() {
-    var that = this;
-    this.isLoading = true;
-    debugger
-    this.collection.fetch( {
+  
+  sortByRetweeted: function(collection) {
       
-      data: { page : this.collection.pageNum },
-    });
+      this.collection.sortByRetweeted();
 
-    //this.collection.pageNum += 1;
-    
-    this.buildList();
-    this.isLoading = false;
-    
+  },
+  sortByFollowers: function() {
+      this.collection.comparator = this.followers;
+      this.collection.sortByFollowers();
+  },
+})
+var testview = Backbone.View.extend({ 
+  el: '#backbonetest',
+  lastRendered: 0,
+  initialize: function() {
+      
+      this.collection.on('sync sort', this.render, this);
+
+      //abstract events, server-related, sorted
+      _.bindAll(this, 'checkScroll');
+      $(window).scroll(this.checkScroll);
+  },
+  events: {
+  },
+
+  render: function() {
+      $('body').removeClass('processing');
+      if (this.lastRendered*this.collection.pageNum < this.collection.models.length) {
+          $('.list').html('');        
+      }
+      this.buildList();
+  },
+  errorMsg: function() {
+      console.log("could not find");
   },
   buildList: function() {
-    var options = {
-        valueNames: [ 'created', 'retweets', 'faves', 'followers', 'tweets' ]
-    };
 
-    for(var i = 0; i< this.collection.models.length; i++) {
-        var tweetText = this.collection.models[i].attributes['text'];
-        this.collection.models[i].attributes['text'] = this.transformText(tweetText);
-        $('.list').append(JST.tweet({tweet:this.collection.models[i].attributes}));
-    }
-    window.twList = new List('tweets', options);
-  },
-  clickedHere: function() {
-    //debugger
-    this.$el.html('world');
+      var start = this.lastRendered;
+      for(var i = start; i< this.collection.models.length; i++) {
+          $('.list').append(JST.tweet({tweet:this.collection.models[i].attributes}));
+          this.lastRendered += 1;
+      }
+      
   },
   checkScroll: function () {
-      debugger
       var triggerPoint = 100; // 100px from the bottom
-      if( !this.isLoading && this.el.scrollTop + this.el.clientHeight + triggerPoint > this.el.scrollHeight ) {
-          this.collection.pageNum += 1; // Load next page
-          this.loadResults();
+      if( !$('body').hasClass('processing')) {
+          if($(window).scrollTop() + $(window).height() >= .9*$(document).height()) {
+            $('body').addClass('processing');
+            this.collection.pageNum += 1;
+            this.collection.fetch( {
+              data: { page : this.collection.pageNum },
+            });
+
+            $('.rtlist').html('');
+            $('.followlist').html('');
+            $('.locationlist').html('');
+            //not working, help.
+            $("img").on('error', function() {
+              $(this).attr('src', 'http://placekitten.com/52/52');
+            });
+          }
+          debugger
+
+          
       }
     }
 });
 
-/*
-$(window).scroll(function() {
-  //debugger
-  if (!$('body').hasClass('processing')) {
-    if($(window).scrollTop() + $(window).height() >= .9*$(document).height()) {
-      $('body').addClass('processing');
-      requestData(1);
-      $('.rtlist').html('');
-      $('.followlist').html('');
-      $('.locationlist').html('');
-    }
-  }
-});
-
-function requestData() { 
-  $.ajax({
-    url: "/api/retrieveTweets/abcd",
-    type: "GET",
-    data: {
-      page: window.pageNum
-    },
-    success: function(response) {
-      displayAll(response['statuses']);
-      $('body').removeClass('processing');
-      $("img").on('error', function() {
-        $(this).attr('src', 'http://placekitten.com/52/52');
-      });
-      window.pageNum++;
-    }
-
-    //error
-  })
-}
-*/
-function displayMostRT(statuses) {
-    var newlist = window.mostrts.concat(statuses).sort(function (a, b) {
-        if (a.retweet_count > b.retweet_count)
-          return -1;
-        if (a.retweet_count < b.retweet_count)
-          return 1;
-        // a must be equal to b
-        return 0;
-    });
-    window.mostrts = newlist;
-
-    for(var i = 0; i< 4; i++) {
-        $('.rtlist').append(JST.toplistitem({tweet:window.mostrts[i]}));
-    }
-    
-}
-function displayMostLocations(statuses) {
-
-  for(var i = 0; i < statuses.length; i++) {
-        
-        var locale = statuses[i].user.location;
-        
-        if (locale != "") {
-            if (Object.keys(window.mostlocations).indexOf(locale) != -1) {
-                window.mostlocations[locale]++;
-            } else {
-                window.mostlocations[locale] = 1;
-            }
-        }
-    }
-    
-    //console.log(window.mostlocations);
-    var newlist = Object.keys(window.mostlocations).sort(function (a,b) {
-        if(window.mostlocations[a] > window.mostlocations[b])
-            return -1;
-        if (window.mostlocations[a] < window.mostlocations[b])
-            return 1;
-        return 0;
-    });
-    //console.log(newlist);
-    for(var i = 0; i< 4; i++) {
-        $('.locationlist').append(JST.toplistloc({location:newlist[i]}));
-    }    
-    
-}
-function displayMostFollowers(statuses) {
-    
-    var newlist = window.mostfollows.concat(statuses).sort(function (a, b) {
-        if (a.user.followers_count > b.user.followers_count)
-          return -1;
-        if (a.user.followers_count < b.user.followers_count)
-          return 1;
-        // a must be equal to b
-        return 0;
-    })
-    window.mostfollows = newlist;
-
-    for(var i = 0; i< 4; i++) {
-        $('.followlist').append(JST.toplistitem({tweet:window.mostfollows[i]}));
-    }
-
-}
-
-function displayAll(statuses) {
-    var options = {
-        valueNames: [ 'created', 'retweets', 'faves', 'followers', 'tweets' ]
-    };
-
-    for(var i = 0; i< statuses.length; i++) {
-        displayTweet(statuses.models[i]);  
-    }
-    window.twList = new List('tweets', options);
-    /*displayMostRT(statuses);
-    displayMostFollowers(statuses);
-    displayMostLocations(statuses);*/
-
-}
 
 function postTweet() {
   $.ajax({

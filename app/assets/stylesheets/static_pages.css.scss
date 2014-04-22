@@ -12,10 +12,10 @@ body {
 
 }
 .dashboard-container {
-	display:none;
+	//display:none;
 	position: fixed;
 	float: left;
-	width: 35%;
+	width: 33%;
 }
 .tweet-container {
 	float: right;
@@ -32,11 +32,12 @@ body {
 }
 
 .sm-container {
+	visibility: hidden;
 	background-color: #990000;
 	-moz-border-radius: 12px;
 	border-radius: 12px;
 	min-height: 150px;
-	width: 90%;
+	width: 93%;
 	opacity:0.9;
 	margin: 10px auto;
 }
@@ -47,10 +48,14 @@ body {
 	border-radius: 12px;
 	min-height: 150px;
 	font-size: 12px;
-	width: 180px;
+	width: 170px;
 	opacity:0.9;
-	margin: 10px 20px;
+	//margin: 10px 20px;
+	margin-left: 15px;
+	margin-bottom: 5px;
 	padding-bottom: 5px;
+	padding-right:5px;
+	padding-left:5px;
 }
 
 .sm-label {
@@ -86,7 +91,7 @@ body {
 .list {
   font-family:sans-serif;
   margin:0;
-  padding:20px 0 0;
+  padding:10px 0 0;
 }
 
 .list > li {
@@ -108,7 +113,7 @@ body {
   
 }
 .toplistloc {
-  margin: 3px -25px;
+  margin: 3px -30px;
   text-transform:capitalize;
 }
 .followlist > li, .rtlist > li {
