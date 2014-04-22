@@ -8,6 +8,7 @@ $(document).ready(
     var collection = new tweetCollection();
     collection.comparator = 'created_at';
     collection.fetch({data: {page:1},
+                      remove: false,
                       error: function(model, xhr, options) {
                               console.log("something went wrong!");
                       }});
@@ -141,13 +142,13 @@ var testview = Backbone.View.extend({
   },
 
   render: function() {
-      $('body').removeClass('processing');
+      
       if (this.lastComparator != this.collection.comparator) {
         this.resetView();
         this.lastComparator = this.collection.comparator;
       }
       this.buildList();
-
+      
   },
   resetView: function() {
       $('.list').html('');
@@ -157,24 +158,32 @@ var testview = Backbone.View.extend({
   },
   buildList: function() {
       debugger
-      var start = this.lastRendered;
-      for(var i = start; i< this.collection.models.length; i++) {
-          $('.list').append(JST.tweet({tweet:this.collection.models[i].attributes}));
-          //debugger
-          console.log('adding to view')
-          this.lastRendered += 1;
-      }
-      
+      console.log('building list');
+      if (this.lastRendered < this.collection.models.length) {
+        this.resetView();
+        var start = this.lastRendered;
+        console.log("LAST TWEET RENDERED: ", start);
+        for(var i = start; i< this.collection.models.length; i++) {
+            $('.list').append(JST.tweet({tweet:this.collection.models[i].attributes}));
+            
+            console.log('adding to view')
+            this.lastRendered += 1;
+        }
+        $('body').removeClass('processing');
+      }      
   },
   checkScroll: function () {
       var triggerPoint = 100; // 100px from the bottom
       if( !$('body').hasClass('processing')) {
+          console.log('dont see any process');
           if($(window).scrollTop() + $(window).height() >= .9*$(document).height()) {
             $('body').addClass('processing');
-            
+            console.log('adding processing tag');
             this.collection.fetch( {
-              data: { page : this.collection.pageNum },
+                data: { page : this.collection.pageNum },
+                remove: false,
             });
+            
 
             $('.rtlist').html('');
             $('.followlist').html('');
@@ -183,9 +192,10 @@ var testview = Backbone.View.extend({
             $("img").on('error', function() {
               $(this).attr('src', 'http://placekitten.com/52/52');
             });
+            this.collection.pageNum += 1;
           }
+          console.log('PAGE: ', this.collection.pageNum);
           
-          this.collection.pageNum += 1;
           
       }
     }
