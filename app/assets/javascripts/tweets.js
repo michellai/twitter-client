@@ -12,7 +12,7 @@ $(document).ready(
                               console.log("something went wrong!");
                       }});
     
-    new sortview({'collection':collection} );
+   
     new testview({'model':tweet, 'collection':collection});
 
   }
@@ -73,9 +73,9 @@ var tweetCollection = Backbone.Collection.extend({
     },
     sortByRetweeted: function () {
       this.setMultiplier();
-      debugger
+      //debugger
       this.sort(function (a, b) {
-          debugger
+          
           if (a.attributes.retweet_count > b.attributes.retweet_count)
               return this.multiplier*-1;
           if (a.attributes.retweet_count < b.attributes.retweet_count)
@@ -115,28 +115,22 @@ var sortview = Backbone.View.extend({
   followers: "followers_count",
   initialize: function() {
       this.multiplier = 'ASC';
+
   },
   events: {
       'click .loc-button': 'sortByLocations',
       'click .retweet-button': 'sortByRetweeted',
       'click .followers-button': 'sortByFollowers'
   },
-  
-  sortByRetweeted: function(collection) {
-      
-      this.collection.sortByRetweeted();
 
-  },
-  sortByFollowers: function() {
-      this.collection.comparator = this.followers;
-      this.collection.sortByFollowers();
-  },
 })
 var testview = Backbone.View.extend({ 
   el: '#backbonetest',
   lastRendered: 0,
+  lastComparator: 'created_at',
+
   initialize: function() {
-      
+      new sortview({'collection':this.collection} );  
       this.collection.on('sync sort', this.render, this);
 
       //abstract events, server-related, sorted
@@ -148,19 +142,26 @@ var testview = Backbone.View.extend({
 
   render: function() {
       $('body').removeClass('processing');
-      if (this.lastRendered*this.collection.pageNum < this.collection.models.length) {
-          $('.list').html('');        
+      if (this.lastComparator != this.collection.comparator) {
+        this.resetView();
+        this.lastComparator = this.collection.comparator;
       }
       this.buildList();
+
+  },
+  resetView: function() {
+      $('.list').html('');
   },
   errorMsg: function() {
       console.log("could not find");
   },
   buildList: function() {
-
+      debugger
       var start = this.lastRendered;
       for(var i = start; i< this.collection.models.length; i++) {
           $('.list').append(JST.tweet({tweet:this.collection.models[i].attributes}));
+          //debugger
+          console.log('adding to view')
           this.lastRendered += 1;
       }
       
@@ -170,7 +171,7 @@ var testview = Backbone.View.extend({
       if( !$('body').hasClass('processing')) {
           if($(window).scrollTop() + $(window).height() >= .9*$(document).height()) {
             $('body').addClass('processing');
-            this.collection.pageNum += 1;
+            
             this.collection.fetch( {
               data: { page : this.collection.pageNum },
             });
@@ -183,8 +184,8 @@ var testview = Backbone.View.extend({
               $(this).attr('src', 'http://placekitten.com/52/52');
             });
           }
-          debugger
-
+          
+          this.collection.pageNum += 1;
           
       }
     }
