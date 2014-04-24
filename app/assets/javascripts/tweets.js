@@ -6,7 +6,7 @@ $(document).ready(
   function() {    
     var tweet = new Tweet();
     var collection = new tweetCollection();
-    collection.comparator = 'created_at';
+    //collection.comparator = 'created_at';
     collection.fetch({data: {page:1},
                       remove: false,
                       error: function(model, xhr, options) {
@@ -40,110 +40,94 @@ var tweetCollection = Backbone.Collection.extend({
     model: Tweet, //type
     sort_order: 'DESC',
     multiplier: 1,
-    //comparator: 'created_at',
+
     initialize: function() {
-        
-        this.comparator = 'created_at';
-        this.sort_order = 'ASC';
+
     },
     parse: function(data){
-        
         for (var t = 0; t < data['statuses'].length;t++) {
-            console.log(t);
+            //console.log(t);
             data['statuses'][t]['text'] = this.transformText(data['statuses'][t]['text']);
         }
-        //debugger
-        
         return data['statuses'];
     },
     transformText: function(statusText) {
-      
       var twre = /\@([a-z]+)/ig;
       var twhash = /\#([a-z]+)/ig;
       var twurl = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
-      //console.log(statusText);
       var newTxt = statusText.replace(twurl, '<a href="$1">$1</a>')
                            .replace(twre, '<a href="http://twitter.com/@$1">@$1</a>')
                            .replace(twhash, '<a href="http://search.twitter.com/search?q=$1">#$1</a>');
       return newTxt;
     },
-    setMultiplier: function() {
-      if (this.sort_order == 'ASC') {
-          this.multiplier = -1;
+    reverse: function() {
+      this.multiplier *= -1;
+    },
+    sortByKey: function(key) {
+      this.comparator = function (a, b) {
+        if (eval('a.attributes.'+key) > eval('b.attributes.'+key))
+            return this.multiplier;
+        if (eval('a.attributes.'+key) < eval('b.attributes.'+key))
+            return -this.multiplier;
+        return 0;
       }
+      this.sort();
     },
-    sortByRetweeted: function () {
-      //this.setMultiplier();
-      console.log('sorting now....multiplier '+this.multiplier)
-      
-      //this.comparator = 'retweet_count';
-      this.sort(function (a, b) {
-          if (a.attributes.retweet_count > b.attributes.retweet_count) {
-              console.log(a+' '+b);
-              return this.multiplier*1;
-          }
-          if (a.attributes.retweet_count < b.attributes.retweet_count)
-          {
-              debugger
-              console.log(a+' '+b);
-              return this.multiplier*-1;
-          }
-          return 0;
-      }); 
-    },
-    sortByLocations: function () {
-
-      this.sort(function (a, b) {
-          if (a.attributes.user.followers_count < b.attributes.user.followers_count)
-              return -1;
-          if (a.attributes.user.followers_count > b.attributes.user.followers_count)
-              return 1;
-          return 0;
-      });
-    },
-    sortByFollowers: function () {
-      //this.setMultiplier();
-      //debugger
-      this.sort(function (a, b) {
-          if (a.attributes.user.followers_count > b.attributes.user.followers_count)
-              return this.multiplier*-1;
-          if (a.attributes.user.followers_count < b.attributes.user.followers_count)
-              return this.multiplier*1;
-          return 0;
-      });
-    },
-
-
 
 });
 var sortview = Backbone.View.extend({
   el: '#backbone-sort-view',
   locations: "tweet-loc",
   retweet: "retweet_count",
+  created: "created_at",
   followers: "followers_count",
+  numTweets: "statuses_count",
+  
   initialize: function() {
-      this.multiplier = 'ASC';
-
+      lastSort: "created_at";
   },
   events: {
       'click .loc-button': 'sortByLocations',
       'click .retweet-button': 'sortByRetweeted',
-      'click .followers-button': 'sortByFollowers'
+      'click .followers-button': 'sortByFollowers',
+      'click .created-button': 'sortByCreated',
+      'click .num-tweet-button': 'sortByNumTweets'
+  },
+  resetMultiplier: function(thisSort) {
+    console.log("Last Sort: "+this.lastSort)
+    if (this.lastSort == thisSort) {
+        console.log("same sort, flipping");
+        this.collection.multiplier *= -1;
+      } else {
+        this.collection.multiplier = 1;
+      }
   },
   sortByRetweeted: function() {
-      this.collection.multiplier = -1*this.collection.multiplier;
-      this.collection.sortByRetweeted();
+      this.resetMultiplier(this.retweet);
+      this.collection.sortByKey(this.retweet);
+      this.lastSort = this.retweet;      
   },
   sortByFollowers: function() {
-      this.collection.multiplier = -1*this.collection.multiplier;
-      this.collection.sortByFollowers();
+      this.resetMultiplier(this.followers);
+      this.collection.sortByKey(this.followers);
+      this.lastSort = this.followers
+  },
+  sortByCreated: function() {
+      this.resetMultiplier(this.created);
+      this.collection.sortByKey(this.created);
+      this.lastSort = this.created;
+  },
+  sortByNumTweets: function() {
+      this.resetMultiplier(this.numTweets);
+      this.collection.sortByKey(this.numTweets);
+      this.lastSort = this.numTweets;
   }
 
 });
 var testview = Backbone.View.extend({ 
   el: '#backbonetest',
   lastRendered: 0,
-  lastComparator: 'created_at',
+  //lastComparator: 'created_at',
 
   initialize: function() {
       new sortview({'collection':this.collection} );  
@@ -161,7 +145,7 @@ var testview = Backbone.View.extend({
       this.resetView();
       $('body').removeClass('processing');
       this.buildList();
-      console.log('removing processing tag')
+      //console.log('removing processing tag')
       
 
   },
@@ -175,7 +159,7 @@ var testview = Backbone.View.extend({
   buildList: function() {
       //debugger
 
-      console.log('building list '+this.lastRendered + ' ' + this.collection.models.length);
+      //console.log('building list '+this.lastRendered + ' ' + this.collection.models.length);
 
       if (this.lastRendered <= this.collection.models.length) {
         
@@ -185,7 +169,7 @@ var testview = Backbone.View.extend({
         for(var i = start; i< this.collection.models.length; i++) {
             $('.list').append(JST.tweet({tweet:this.collection.models[i].attributes}));
             
-            console.log('XXXXX adding index: '+i+' view')
+            //console.log('XXXXX adding index: '+i+' view')
             this.lastRendered += 1;
         }
         //debugger
@@ -201,7 +185,7 @@ var testview = Backbone.View.extend({
           //console.log('dont see any process');
           if($(window).scrollTop() + $(window).height() >= .9*$(document).height()) {
               $('body').addClass('processing');
-              console.log('adding processing tag');
+              
               this.collection.fetch( {
                   data: { page : this.collection.pageNum },
                   remove: false,
@@ -217,7 +201,7 @@ var testview = Backbone.View.extend({
               });
               this.collection.pageNum += 1;
           }
-          console.log('PAGE: ', this.collection.pageNum);
+          //console.log('PAGE: ', this.collection.pageNum);
           
           
       }
