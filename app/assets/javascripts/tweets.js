@@ -6,7 +6,6 @@ $(document).ready(
   function() {    
     var tweet = new Tweet();
     var collection = new tweetCollection();
-    //collection.comparator = 'created_at';
     collection.fetch({data: {page:1},
                       remove: false,
                       error: function(model, xhr, options) {
@@ -15,9 +14,9 @@ $(document).ready(
     
    
     new testview({'model':tweet, 'collection':collection});
-    new rtview({'model':tweet, 'collection':collection});
-    new locview({'model':tweet, 'collection':collection});
-    new followersview({'model':tweet, 'collection':collection});
+    //new rtview({'model':tweet, 'collection':collection});
+    //new locview({'model':tweet, 'collection':collection});
+    //new followersview({'model':tweet, 'collection':collection});
   }
 );
 
@@ -108,19 +107,26 @@ var tweetCollection = Backbone.Collection.extend({
       this.sort();
 
     },
-    /*
+    
     onlyUnique: function(value, index, self) { 
         return self.indexOf(value) === index;
     },
-    getUnique: function(key) {
-        var sortedAttr = []
+
+    getUniqueNames: function(key) {
+        var sortedVals = [];
+        
         for (var i = 0; i < this.length; i++) {
-          sortedVals.append(eval('this.models[i].attributes.'+key));
-        sortedAttr.filter( onlyUnique );
-        return sortedAttr;
-    }*/
+          
+          sortedVals.push(eval('this.models[i].attributes.user'));
+        }
+        //debugger
+        sortedVals.filter( this.onlyUnique );
+        return sortedVals;
+        
+    }
 
 });
+
 var sortview = Backbone.View.extend({
   el: '#backbone-sort-view',
   
@@ -150,6 +156,7 @@ var sortview = Backbone.View.extend({
   },
 
 });
+
 var locview = Backbone.View.extend({
   el: '#backbone-most-locations',
   
@@ -170,6 +177,7 @@ var locview = Backbone.View.extend({
   },
 
 });
+
 var rtview = Backbone.View.extend({
   el: '#backbone-most-rt',
   
@@ -181,8 +189,10 @@ var rtview = Backbone.View.extend({
       $('.rtlist').html('');
   },
   buildList: function() {
+      var unique = this.collection.getUniqueNames();
+      //debugger
       for(var i = 0; i< 5; i++)
-          $('.rtlist').append(JST.toplistitem({tweet:this.collection.models[i].attributes}));     
+          $('.rtlist').append(JST.toplistitem({tweet:unique[i]}));
   },
   render: function() {
       this.collection.sortByKey(this.$el.data('sortkey')); 
@@ -191,6 +201,7 @@ var rtview = Backbone.View.extend({
   },
 
 });
+
 var followersview = Backbone.View.extend({
   el: '#backbone-most-follow',
   
@@ -201,8 +212,10 @@ var followersview = Backbone.View.extend({
       $('.followlist').html('');
   },
   buildList: function() {
+      var unique = this.collection.getUniqueNames();
+      debugger
       for(var i = 0; i< 5; i++)
-          $('.followlist').append(JST.toplistitem({tweet:this.collection.models[i].attributes}));     
+          $('.followlist').append(JST.toplistitem({tweet:unique[i]}));
   },
   render: function() {
       this.collection.sortByKey(this.$el.data('sortkey')); 
@@ -211,6 +224,7 @@ var followersview = Backbone.View.extend({
   },
 
 });
+
 var testview = Backbone.View.extend({ 
   el: '#backbonetest',
   lastRendered: 0,
@@ -248,15 +262,13 @@ var testview = Backbone.View.extend({
   checkScroll: function () {
       var triggerPoint = 100; // 100px from the bottom
       if( !$('body').hasClass('processing')) {
-          //console.log('dont see any process');
           if($(window).scrollTop() + $(window).height() >= .9*$(document).height()) {
               $('body').addClass('processing');
               
               this.collection.fetch( {
                   data: { page : this.collection.pageNum },
                   remove: false,
-              });
-            
+              });            
 
               $('.rtlist').html('');
               $('.followlist').html('');
