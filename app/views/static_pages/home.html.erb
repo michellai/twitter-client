@@ -6,15 +6,15 @@
 		<img class="self-profile-img" src='https://pbs.twimg.com/profile_images/1798484398/S_Twitter_white-resize.png'/>
 		<div class="self-profile-name">Stanford on Twitter</div>
 	</div>
-	<div class="most-rt xs-container">
+	<div id="backbone-most-rt" class="xs-container" data-sortkey="retweet_count">
 		<div class="xs-label">Most Retweeted</div>
 		<ul class="rtlist"></ul>
 	</div>
-	<div class="most-follow xs-container">
+	<div id="backbone-most-follow" class="xs-container">
 		<div class="xs-label">Most Followers</div>
 		<ul class="followlist"></ul>
 	</div>
-	<div class="most-locations xs-container">
+	<div id="backbone-most-locations" class="xs-container">
 		<div class="xs-label">Most Tweeted Loc</div>
 		<ul class="locationlist"></ul>
 	</div>
@@ -25,11 +25,12 @@
 <div id="tweets" class="tweet-container">
 	<div class="tweet-sort-bar">Sort By:
 		<div id="backbone-sort-view">
-			<button class="created-button">created</button>
-			<button class="retweet-button">rts</button>
-			<button class="followers-button">followers</button>
-			<button class="num-tweet-button">tweets</button>
-			<button class="loc-button">location</button>
+			<button class="faves-button" data-sortkey="favorite_count">created</button>
+			<button class="created-button" data-sortkey="created_at">created</button>
+			<button class="retweet-button" data-sortkey="retweet_count">rts</button>
+			<button class="followers-button" data-sortkey="user.followers_count">followers</button>
+			<button class="num-tweet-button" data-sortkey="user.statuses_count">tweets</button>
+			<button class="loc-button" data-sortkey="user.loc_frequency">location</button>
 		</div>
 	</div>
 	<ul class="list">

@@ -15,7 +15,9 @@ $(document).ready(
     
    
     new testview({'model':tweet, 'collection':collection});
-
+    new rtview({'model':tweet, 'collection':collection});
+    new locview({'model':tweet, 'collection':collection});
+    new followersview({'model':tweet, 'collection':collection});
   }
 );
 
@@ -40,7 +42,9 @@ var tweetCollection = Backbone.Collection.extend({
     model: Tweet, //type
     sort_order: 'DESC',
     multiplier: 1,
-    mostlocations: {},
+    mostlocations: [],
+    mostrts: [],
+    mostfollows: [],
     initialize: function() {
 
     },
@@ -49,6 +53,7 @@ var tweetCollection = Backbone.Collection.extend({
             //console.log(t);
             data['statuses'][t]['text'] = this.transformText(data['statuses'][t]['text']);
         }
+        //data['statuses'][t]['user']['location']['']
         return data['statuses'];
     },
     transformText: function(statusText) {
@@ -64,6 +69,7 @@ var tweetCollection = Backbone.Collection.extend({
       this.multiplier *= -1;
     },
     storeLocations: function() {
+      /* First, Go through list and store dictionary of occurences per locale */
       for(var i = 0; i < this.length; i++) {
         var locale = this.models[i].attributes.user.location;
         
@@ -75,57 +81,58 @@ var tweetCollection = Backbone.Collection.extend({
             }
         } 
       }
+      /* Then, Go through list and set loc_frequency attribute for each tweet */
       for(var i = 0; i < this.length; i++) {
           var locale = this.models[i].attributes.user.location;
           
           if (locale != "") {
               console.log('setting locale: '+locale+'  '+this.mostlocations[locale])
-              this.models[i].attributes.user.location.frequency = this.mostlocations[locale];
+              this.models[i].attributes.user.loc_frequency = this.mostlocations[locale];
           } else {
-            this.models[i].attributes.user.location.frequency = new Number()
+            this.models[i].attributes.user.loc_frequency = new Number()
           }
-      }
-      
-    },
-    sortByLocations: function() {
-
-      this.storeLocations();
-      
-
-      this.sortByKey('user.location.frequency');
-      
-
+      }      
     },
     sortByKey: function(key) {
+      if (key == "user.loc_frequency") {
+          this.mostlocations = {};
+          this.storeLocations();
+      }
       this.comparator = function (a, b) {
         if (eval('a.attributes.'+key) > eval('b.attributes.'+key))
-            return this.multiplier;
-        if (eval('a.attributes.'+key) < eval('b.attributes.'+key))
             return -this.multiplier;
+        if (eval('a.attributes.'+key) < eval('b.attributes.'+key))
+            return this.multiplier;
         return 0;
       }
       this.sort();
 
     },
+    /*
+    onlyUnique: function(value, index, self) { 
+        return self.indexOf(value) === index;
+    },
+    getUnique: function(key) {
+        var sortedAttr = []
+        for (var i = 0; i < this.length; i++) {
+          sortedVals.append(eval('this.models[i].attributes.'+key));
+        sortedAttr.filter( onlyUnique );
+        return sortedAttr;
+    }*/
 
 });
 var sortview = Backbone.View.extend({
   el: '#backbone-sort-view',
-  locations: "user.location",
-  retweet: "retweet_count",
-  created: "created_at",
-  followers: "user.followers_count",
-  numTweets: "user.statuses_count",
   
   initialize: function() {
       lastSort: "created_at";
   },
   events: {
-      'click .loc-button': 'sortByLocations',
-      'click .retweet-button': 'sortByRetweeted',
-      'click .followers-button': 'sortByFollowers',
-      'click .created-button': 'sortByCreated',
-      'click .num-tweet-button': 'sortByNumTweets'
+      'click .loc-button': 'sortByKey',
+      'click .retweet-button': 'sortByKey',
+      'click .followers-button': 'sortByKey',
+      'click .created-button': 'sortByKey',
+      'click .num-tweet-button': 'sortByKey'
   },
   resetMultiplier: function(thisSort) {
     console.log("Last Sort: "+this.lastSort)
@@ -136,57 +143,90 @@ var sortview = Backbone.View.extend({
         this.collection.multiplier = 1;
       }
   },
-  sortByLocations: function() {
-      this.resetMultiplier(this.locations);
-      this.collection.sortByLocations();
-      this.lastSort = this.locations;      
+  sortByKey: function(e) {
+      this.resetMultiplier($(e.target).data('sortkey'));
+      this.collection.sortByKey($(e.target).data('sortkey'));
+      this.lastSort = $(e.target).data('sortkey');
   },
-  sortByRetweeted: function() {
-      this.resetMultiplier(this.retweet);
-      this.collection.sortByKey(this.retweet);
-      this.lastSort = this.retweet;      
+
+});
+var locview = Backbone.View.extend({
+  el: '#backbone-most-locations',
+  
+  initialize: function() {
+      this.collection.on('sync', this.render, this);
   },
-  sortByFollowers: function() {
-      this.resetMultiplier(this.followers);
-      this.collection.sortByKey(this.followers);
-      this.lastSort = this.followers
+  resetView: function() {
+      $('.locationlist').html('');
   },
-  sortByCreated: function() {
-      this.resetMultiplier(this.created);
-      this.collection.sortByKey(this.created);
-      this.lastSort = this.created;
+  buildList: function() {
+      for(var i = 0; i< 5; i++)
+          $('.locationlist').append(JST.toplistloc({tweet:this.collection.models[i].attributes}));      
   },
-  sortByNumTweets: function() {
-      this.resetMultiplier(this.numTweets);
-      this.collection.sortByKey(this.numTweets);
-      this.lastSort = this.numTweets;
-  }
+  render: function() {
+      this.collection.sortByKey(this.$el.data('sortkey')); 
+      this.resetView();
+      this.buildList();
+  },
+
+});
+var rtview = Backbone.View.extend({
+  el: '#backbone-most-rt',
+  
+  initialize: function() {
+      this.collection.on('sync', this.render, this);
+  },
+
+  resetView: function() {
+      $('.rtlist').html('');
+  },
+  buildList: function() {
+      for(var i = 0; i< 5; i++)
+          $('.rtlist').append(JST.toplistitem({tweet:this.collection.models[i].attributes}));     
+  },
+  render: function() {
+      this.collection.sortByKey(this.$el.data('sortkey')); 
+      this.resetView();
+      this.buildList();
+  },
+
+});
+var followersview = Backbone.View.extend({
+  el: '#backbone-most-follow',
+  
+  initialize: function() {
+      this.collection.on('sync', this.render, this);
+  },
+  resetView: function() {
+      $('.followlist').html('');
+  },
+  buildList: function() {
+      for(var i = 0; i< 5; i++)
+          $('.followlist').append(JST.toplistitem({tweet:this.collection.models[i].attributes}));     
+  },
+  render: function() {
+      this.collection.sortByKey(this.$el.data('sortkey')); 
+      this.resetView();
+      this.buildList();
+  },
 
 });
 var testview = Backbone.View.extend({ 
   el: '#backbonetest',
   lastRendered: 0,
-  //lastComparator: 'created_at',
 
   initialize: function() {
       new sortview({'collection':this.collection} );  
       this.collection.on('sync sort', this.render, this);
-
-      //abstract events, server-related, sorted
       _.bindAll(this, 'checkScroll');
       $(window).scroll(this.checkScroll);
   },
   events: {
   },
-
-  render: function() {
-      
+  render: function() {    
       this.resetView();
       $('body').removeClass('processing');
       this.buildList();
-      //console.log('removing processing tag')
-      
-
   },
   resetView: function() {
       $('.list').html('');
@@ -196,26 +236,13 @@ var testview = Backbone.View.extend({
       console.log("could not find");
   },
   buildList: function() {
-      //debugger
-
-      //console.log('building list '+this.lastRendered + ' ' + this.collection.models.length);
-
-      if (this.lastRendered <= this.collection.models.length) {
-        
+      if (this.lastRendered <= this.collection.models.length) {        
         var start = this.lastRendered;
-        //console.log("LAST TWEET RENDERED: ", start);
         
         for(var i = start; i< this.collection.models.length; i++) {
             $('.list').append(JST.tweet({tweet:this.collection.models[i].attributes}));
-            
-            //console.log('XXXXX adding index: '+i+' view')
             this.lastRendered += 1;
         }
-        //debugger
-        /*
-        for(var i = 0; i< this.collection.models.length; i++) {
-            $('.list').append(JST.tweet({tweet:this.collection.models[i].attributes}));
-        }*/
       }      
   },
   checkScroll: function () {
@@ -239,10 +266,7 @@ var testview = Backbone.View.extend({
                 $(this).attr('src', 'http://placekitten.com/52/52');
               });
               this.collection.pageNum += 1;
-          }
-          //console.log('PAGE: ', this.collection.pageNum);
-          
-          
+          }          
       }
     }
 });
