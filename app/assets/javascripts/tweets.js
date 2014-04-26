@@ -40,7 +40,7 @@ var tweetCollection = Backbone.Collection.extend({
     model: Tweet, //type
     sort_order: 'DESC',
     multiplier: 1,
-
+    mostlocations: {},
     initialize: function() {
 
     },
@@ -63,6 +63,39 @@ var tweetCollection = Backbone.Collection.extend({
     reverse: function() {
       this.multiplier *= -1;
     },
+    storeLocations: function() {
+      for(var i = 0; i < this.length; i++) {
+        var locale = this.models[i].attributes.user.location;
+        
+        if (locale != "") {
+            if (Object.keys(this.mostlocations).indexOf(locale) != -1) {
+                this.mostlocations[locale]++;
+            } else {
+                this.mostlocations[locale] = 1;
+            }
+        } 
+      }
+      for(var i = 0; i < this.length; i++) {
+          var locale = this.models[i].attributes.user.location;
+          
+          if (locale != "") {
+              console.log('setting locale: '+locale+'  '+this.mostlocations[locale])
+              this.models[i].attributes.user.location.frequency = this.mostlocations[locale];
+          } else {
+            this.models[i].attributes.user.location.frequency = new Number()
+          }
+      }
+      
+    },
+    sortByLocations: function() {
+
+      this.storeLocations();
+      
+
+      this.sortByKey('user.location.frequency');
+      
+
+    },
     sortByKey: function(key) {
       this.comparator = function (a, b) {
         if (eval('a.attributes.'+key) > eval('b.attributes.'+key))
@@ -72,16 +105,17 @@ var tweetCollection = Backbone.Collection.extend({
         return 0;
       }
       this.sort();
+
     },
 
 });
 var sortview = Backbone.View.extend({
   el: '#backbone-sort-view',
-  locations: "tweet-loc",
+  locations: "user.location",
   retweet: "retweet_count",
   created: "created_at",
-  followers: "followers_count",
-  numTweets: "statuses_count",
+  followers: "user.followers_count",
+  numTweets: "user.statuses_count",
   
   initialize: function() {
       lastSort: "created_at";
@@ -101,6 +135,11 @@ var sortview = Backbone.View.extend({
       } else {
         this.collection.multiplier = 1;
       }
+  },
+  sortByLocations: function() {
+      this.resetMultiplier(this.locations);
+      this.collection.sortByLocations();
+      this.lastSort = this.locations;      
   },
   sortByRetweeted: function() {
       this.resetMultiplier(this.retweet);
