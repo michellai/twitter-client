@@ -12,17 +12,35 @@ body {
 
 }
 .dashboard-container {
-	//display:none;
+	
+	background-image:url('stanford.jpg');
+	backround-repeat:no-repeat;
+	background-size:100%;
+	left: 0px;
+	top:0px;
 	position: fixed;
-	float: left;
-	width: 33%;
+	width: 100%;
+	//padding-top:20px;
+	//padding-bottom:20px;
+	z-index: 1;
+}
+.tweet-sort-bar {
+	position: fixed;
+	top: 225px;
+	//margin-top: 20px;
+	//margin-left: 10px;
+	color: #FFFFFF;
+	width: 91%;
+	padding:5px 22px;
+	background-color: #990000;
+	z-index:3;
 }
 .tweet-container {
-	float: right;
-	
-	margin-right: 40px;
-	margin-top: 200px;
-	width: 60%;
+	position: absolute;
+	top:160px;
+	margin: 20px;
+	margin-top: 90px;
+	width: 95%;
 	height: 80%;
 	background-color: #990000;
 	-moz-border-radius: 12px;
@@ -32,7 +50,7 @@ body {
 }
 
 .sm-container {
-	visibility: hidden;
+	display: none;
 	background-color: #990000;
 	-moz-border-radius: 12px;
 	border-radius: 12px;
@@ -42,7 +60,8 @@ body {
 	margin: 10px auto;
 }
 .xs-container  {
-	display: inline-block;
+	//display: inline-block;
+	float: right;
 	background-color: #990000;
 	-moz-border-radius: 12px;
 	border-radius: 12px;
@@ -50,10 +69,9 @@ body {
 	font-size: 12px;
 	width: 170px;
 	opacity:0.9;
-	//margin: 10px 20px;
-	margin-left: 15px;
-	margin-bottom: 5px;
-	padding-bottom: 5px;
+	margin-right: 30px;
+	margin-top: 20px;
+	margin-bottom:20px;
 	padding-right:5px;
 	padding-left:5px;
 }
@@ -72,14 +90,10 @@ body {
 	margin-top: 8px;
 	border-bottom: 1px solid white;
 }
-.tweet-sort-bar {
-	margin-top: 20px;
-	margin-left: 10px;
-	color: #FFFFFF;
-}
+
 .pages {
 	border: 0px;
-	padding-right: 10px;
+	//padding-right: 10px;
 	display: inline-block;
 	float: right;
 }
@@ -107,11 +121,7 @@ body {
   list-style-type: none;
   color: white;
 }
-.toplistloc {
-  font-size: 14px;
-  padding-top: 4px;
-  
-}
+
 .toplistloc {
   margin: 3px -30px;
   text-transform:capitalize;

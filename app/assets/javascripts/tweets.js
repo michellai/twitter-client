@@ -14,9 +14,9 @@ $(document).ready(
     
    
     new testview({'model':tweet, 'collection':collection});
-    //new rtview({'model':tweet, 'collection':collection});
+    new rtview({'model':tweet, 'collection':collection});
     //new locview({'model':tweet, 'collection':collection});
-    //new followersview({'model':tweet, 'collection':collection});
+    new followersview({'model':tweet, 'collection':collection});
   }
 );
 
@@ -213,7 +213,7 @@ var followersview = Backbone.View.extend({
   },
   buildList: function() {
       var unique = this.collection.getUniqueNames();
-      debugger
+      //debugger
       for(var i = 0; i< 5; i++)
           $('.followlist').append(JST.toplistitem({tweet:unique[i]}));
   },
@@ -254,6 +254,7 @@ var testview = Backbone.View.extend({
         var start = this.lastRendered;
         
         for(var i = start; i< this.collection.models.length; i++) {
+            //debugger
             $('.list').append(JST.tweet({tweet:this.collection.models[i].attributes}));
             this.lastRendered += 1;
         }

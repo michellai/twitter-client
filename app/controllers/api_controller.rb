@@ -9,7 +9,7 @@ require 'twitter'
       config.access_token        = "14299674-At4JJSGnnUNe1txGbNdtcFmLTCF9MkHXQW9N7TRgj" #oauth
       config.access_token_secret = "y3awxIBSfGY7jSbSKapO0GZ15ryd8RDlXPs7DNaRNIVVW" #oauth secret
     end
-    """
+    
     file = File.join(Rails.root, 'app', 'assets', 'javascripts', 'stanford1.json')
     if Integer(params[:page]) <= 6
       file = File.join(Rails.root, 'app', 'assets', 'javascripts', 'stanford' + params[:page] + '.json')
@@ -17,10 +17,10 @@ require 'twitter'
 
     tweets = JSON.parse(File.read(file))
     render :json => tweets, :status => 200
-    """
+    
     #need to build in some concept of page number... max id?
-    results = client.search("stanford", :result_type => "recent", :max_id => "427305711974887425", :count => 4)
-    binding.pry
+    #results = client.search("stanford", :result_type => "recent", :max_id => "427305711974887425", :count => 4)
+    #binding.pry
   end
 
   def postTweet
