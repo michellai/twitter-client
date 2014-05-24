@@ -13,35 +13,37 @@ body {
 }
 .dashboard-container {
 	
-	background-image:url('stanford.jpg');
-	backround-repeat:no-repeat;
-	background-size:100%;
+	//background-image:url('stanford.jpg');
+	//backround-repeat:no-repeat;
+	//background-size:100%;
 	left: 0px;
-	top:0px;
+	top:30px;
 	position: fixed;
-	width: 100%;
+	width: 40%;
 	//padding-top:20px;
 	//padding-bottom:20px;
 	z-index: 1;
 }
 .tweet-sort-bar {
 	position: fixed;
-	top: 225px;
+	//top: 225px;
 	//margin-top: 20px;
 	//margin-left: 10px;
 	color: #FFFFFF;
-	width: 91%;
+	width: 50%;
 	padding:5px 22px;
 	background-color: #990000;
 	z-index:3;
 }
 .tweet-container {
+	float:right;
 	position: absolute;
-	top:160px;
-	margin: 20px;
+	//top:160px;
+	left: 40%;
+	//margin: 20px;
 	margin-top: 90px;
-	width: 95%;
-	height: 80%;
+	width: 60%;
+	//height: 80%;
 	background-color: #990000;
 	-moz-border-radius: 12px;
 	border-radius: 12px;
@@ -97,7 +99,9 @@ body {
 	display: inline-block;
 	float: right;
 }
-
+label {
+	color: white;
+}
 .sort {
 	border-right: 1px solid white;
 	padding: 0px 6px;

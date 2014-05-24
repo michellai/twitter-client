@@ -6,10 +6,14 @@ $(document).ready(
   function() {    
     var tweet = new Tweet();
     var collection = new tweetCollection();
-    collection.fetch({data: {page:1},
+
+    collection.fetch({data: {},
                       remove: false,
                       error: function(model, xhr, options) {
-                              console.log("something went wrong!");
+                          console.log("something went wrong!");
+                      }, 
+                      success: function(data) {
+                          collection.maxID = data.at(data.length-1).get("id");
                       }});
     
    
@@ -37,6 +41,8 @@ var Tweet = Backbone.Model.extend({
 
 var tweetCollection = Backbone.Collection.extend({
     url: "/api/retrieveTweets/abcd",
+    nTweets: 20, //number from take()
+    maxID: 0,
     pageNum: 1,
     model: Tweet, //type
     sort_order: 'DESC',
@@ -47,14 +53,7 @@ var tweetCollection = Backbone.Collection.extend({
     initialize: function() {
 
     },
-    parse: function(data){
-        for (var t = 0; t < data['statuses'].length;t++) {
-            //console.log(t);
-            data['statuses'][t]['text'] = this.transformText(data['statuses'][t]['text']);
-        }
-        //data['statuses'][t]['user']['location']['']
-        return data['statuses'];
-    },
+
     transformText: function(statusText) {
       var twre = /\@([a-z]+)/ig;
       var twhash = /\#([a-z]+)/ig;
@@ -219,7 +218,7 @@ var followersview = Backbone.View.extend({
   },
   render: function() {
       this.collection.sortByKey(this.$el.data('sortkey')); 
-      this.resetView();
+      //this.resetView();
       this.buildList();
   },
 
@@ -241,6 +240,8 @@ var testview = Backbone.View.extend({
       this.resetView();
       $('body').removeClass('processing');
       this.buildList();
+      
+      
   },
   resetView: function() {
       $('.list').html('');
@@ -250,6 +251,7 @@ var testview = Backbone.View.extend({
       console.log("could not find");
   },
   buildList: function() {
+      //debugger
       if (this.lastRendered <= this.collection.models.length) {        
         var start = this.lastRendered;
         
@@ -265,12 +267,18 @@ var testview = Backbone.View.extend({
       if( !$('body').hasClass('processing')) {
           if($(window).scrollTop() + $(window).height() >= .9*$(document).height()) {
               $('body').addClass('processing');
-              
+              var the_view = this;
               this.collection.fetch( {
-                  data: { page : this.collection.pageNum },
+                  data: { max_id : this.collection.maxID },
                   remove: false,
-              });            
 
+              }).done(function(data) {
+                  console.log( "Fetch Done");
+                  //debugger
+                  the_view.collection.maxID = data[data.length-1].id;
+              }); 
+
+              //debugger
               $('.rtlist').html('');
               $('.followlist').html('');
               $('.locationlist').html('');
@@ -279,7 +287,9 @@ var testview = Backbone.View.extend({
                 $(this).attr('src', 'http://placekitten.com/52/52');
               });
               this.collection.pageNum += 1;
-          }          
+              
+
+          }
       }
     }
 });
