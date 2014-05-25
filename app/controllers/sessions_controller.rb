@@ -2,9 +2,11 @@ class SessionsController < ApplicationController
   respond_to :html, :json
   
   def create
+    
     @user = User.authenticate(params[:email], params[:password])
  
     if @user
+
       create_user_session(@user)
       respond_with @user, :location => '/', :notice => "Login succesful."
     else

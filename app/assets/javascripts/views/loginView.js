@@ -3,6 +3,7 @@ LoginView = Backbone.View.extend({
   events: { 'submit form':   'authorize' },
  
   authorize: function () {
+    debugger
     if (this.submitButton.hasClass('disabled') && !(this.form.data('user-authorized') === true)) {
       return false;
     } else {

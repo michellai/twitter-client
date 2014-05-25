@@ -8,7 +8,7 @@ TwitterApi::Application.routes.draw do
   match 'logout' => 'sessions#destroy', :via => [:get, :delete]
   match 'signup' => 'users#new', :via => :get
 
-  resources :sessions, :only => [:new, :create, :destroy]
+  resource :session, :only => [:new, :create, :destroy]
   resource :account, :controller => 'users', :except => [:index, :destroy, :show, :edit]
 
   root :to => "static_pages#home"

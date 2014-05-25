@@ -2,6 +2,7 @@ var User = Backbone.Model.extend({
   url: '/account',
   paramRoot: 'user',
   authenticate: function (password, callback) {
+    debugger
     var self = this;
  
     $.ajax({
