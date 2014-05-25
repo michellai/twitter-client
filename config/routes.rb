@@ -1,4 +1,16 @@
 TwitterApi::Application.routes.draw do
+  #get "sessions/new"
+  #get 'signup', to: 'users#new', as: 'signup'
+  #get 'login', to: 'sessions#new', as: 'login'
+  #get 'logout', to: 'sessions#destroy', as: 'logout'
+
+  match 'login'  => 'sessions#new', :via => :get
+  match 'logout' => 'sessions#destroy', :via => [:get, :delete]
+  match 'signup' => 'users#new', :via => :get
+
+  resources :sessions, :only => [:new, :create, :destroy]
+  resource :account, :controller => 'users', :except => [:index, :destroy, :show, :edit]
+
   root :to => "static_pages#home"
 
   get "static_pages/help"
@@ -8,6 +20,7 @@ TwitterApi::Application.routes.draw do
   get "api/retrieveTweets/:id" => "api#retrieveTweets" #convention for naming is for api to map to controller name
 
   post "api/posttweet" => "api#postTweet"
+
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

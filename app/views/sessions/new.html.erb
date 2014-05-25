@@ -1,13 +1,17 @@
 <h1>Log In</h1>
 
-<%= form_tag sessions_path do %>
-  <div class="field">
-    <%= label_tag :email %><br />
+<div id='login-view'>
+  <aside>
+    <h1>42Floors MLS</h1>
+  </aside>
+  <%= form_tag session_path do %>
+    <%= label_tag :email %>
     <%= text_field_tag :email, params[:email] %>
-  </div>
-  <div class="field">
-    <%= label_tag :password %><br />
+ 
+    <%= label_tag :password %>
     <%= password_field_tag :password %>
-  </div>
-  <div class="actions"><%= submit_tag "Log In" %></div>
-<% end %>
+ 
+    <%= submit_tag "Log In" %>
+  <% end %>
+  <div class='clear'></div>
+</div>

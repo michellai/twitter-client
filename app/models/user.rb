@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
     attr_accessor :password
-    #attr_accessible :name, :email, :password, :password_confirmation
+    attr_accessible :name, :email, :password, :password_confirmation
     attr_protected :password_digest
 
     validates :name, :presence => true
@@ -9,6 +9,10 @@ class User < ActiveRecord::Base
     validates :password_confirmation, :presence => { :if => :password }
     validates :phone, :format => { :allow_nil => true, :with => /^[()0-9- +.]{10,20}s*[extension.]{0,9}s*[0-9]{0,5}$/i }
 
+    def self.authenticate(email, pass)
+        user = where(:email => email).first
+        user && BCrypt::Password.new(user.password_digest) == pass ? user : nil
+    end
     def password=(pass)
         return if pass.blank?
         @password = pass
